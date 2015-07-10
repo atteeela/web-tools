@@ -2,18 +2,31 @@
 name: phantomjs
 
 # A unique name to identify the author
-author: 
+author: Leo
 
 # A contact email address
-contact: 
+contact: leo@stackhut.com
 
 # description of the service
 description: Awesome service in nodejs
 
 # stack we use, in terms of the OS and language runtime
-baseos: alpine
+baseos: fedora
 stack: nodejs
 
 # a list of files we wish to copy into the image
 files:
     - example_request.json
+    - phantomjs-2.0.1-bin
+    - libicu-4.2.1-9.1.el6_2.x86_64.rpm  # wget from http://mirror.centos.org/centos/6/os/x86_64/Packages/libicu-4.2.1-9.1.el6_2.x86_64.rpm
+
+os_deps:
+    - freetype
+    - fontconfig
+    - libjpeg
+    - libpng
+    - libpng12
+
+docker_cmds:
+    - RUN rpm -iv --force libicu-4.2.1-9.1.el6_2.x86_64.rpm
+
