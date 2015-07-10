@@ -1,0 +1,19 @@
+# Name for the service - we recommend using snake-case
+name: phantomjs
+
+# A unique name to identify the author
+author: 
+
+# A contact email address
+contact: 
+
+# description of the service
+description: Awesome service in nodejs
+
+# stack we use, in terms of the OS and language runtime
+baseos: alpine
+stack: nodejs
+
+# a list of files we wish to copy into the image
+files:
+    - example_request.json

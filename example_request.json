@@ -1,0 +1,12 @@
+{
+    "serviceName": "phantomjs",
+    "id": "",
+    "req": [
+        {
+            "jsonrpc": "2.0",
+            "method": "Default.add",
+            "params": [1, 2],
+            "id" : 1
+        }
+    ]
+}
