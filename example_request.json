@@ -1,6 +1,5 @@
 {
     "serviceName": "phantomjs",
-    "id": "1",
     "req":{
         "method": "Default.add",
         "params": [1, 2]
