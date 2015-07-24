@@ -1,6 +1,6 @@
-# Phantomjs Service
+# Browser as a Service
 
-Add info here
+Currently just screenshots a webpage with PhantomJS / Selenium. Unlike Phantom on the server, this should scale horizontally due to containers. Woop!
 
 ## Usage
 * Edit the `Hutfile` to describe your service parameters

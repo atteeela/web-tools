@@ -1,11 +1,12 @@
 # Name for the service - we recommend using snake-case
-name: phantomjs
+name: browser
+author: lanthias
 
 # GitHub URL to the project
-github_url: https://github.com/StackHut/phantomjs-python
+github_url: https://github.com/StackHut/browser
 
 # description of the service
-description: PhantomJS service written in Python
+description: A headless browser written in Selenium
 
 # stack we use, in terms of the OS and language runtime
 baseos: fedora
