@@ -1,8 +1,9 @@
 .stackhut.log
 *.json
-!example_request.json
 local_task
 .stackhut
+.Dockerfile
+run_result
 
 # ide
 *.iml
