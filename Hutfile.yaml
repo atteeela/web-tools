@@ -12,10 +12,10 @@ baseos: fedora
 stack: python
 
 # Persist the service between requests
-persistent: True
+persistent: False
 
 # Restrict service access to authenticated users
-private: True
+private: False
 
 # a list of files we wish to copy into the image
 files:
