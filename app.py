@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Demo StackHut service
+web-tools Service
 """
 import stackhut
 from selenium import webdriver
 
-class DemoService:
+class Default(stackhut.Service):
     def __init__(self):
         pass
 
@@ -19,4 +19,4 @@ class DemoService:
         return stackhut.put_file('screen.png')
 
 # export the services here
-SERVICES = {"Default": DemoService()}
+SERVICES = {"Default": Default()}
