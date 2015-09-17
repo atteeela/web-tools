@@ -39,7 +39,7 @@ render_url = web_tools.Default.renderWebpage("http://www.stackhut.com", 1024, 76
 This Python-based service demonstrates the following features,
 
 * OS dependencies
-* Embedding resource files within a service
+* Embedding and accessing resource files within a service
 * Custom binaries and dependencies
 * Running arbitrary Docker build commands
 
@@ -73,6 +73,7 @@ Here we configure the service to include a range of Linux system libraries from 
 
 Within the `files` field we include a list of files within the project directory that you wish to package up within the service for deployment.
 This list can be either individual files or directories, in which case the entire contests of the directory is included. (Note, you must explicitly list additional files within this field to ensure they exist during testing and deployment. By default only the basic project files are packaged up.)
+In this case we include a set of custom binaries to run [PhantomJS](http://phantomjs.org/) - a difficult to build project that moves rapidly and thus not available within the OS package repositories.
 
 Finally we include the `docker_cmds` field, this specifies a list of explicit, imperative, commands to be executed when constructing the Docker container. The available commands are those supported by Docker's [Dockerfile build system](https://docs.docker.com/reference/builder/). Here we use the `docker_cmds` field to explicitly install a RedHat Linux `.rpm` package inside the service that is required by `PhantomJS`.
 
