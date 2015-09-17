@@ -17,41 +17,24 @@ It uses these to provide a screen-shotting service that works for JS-heavy sites
 
 #### `Default` Interface
 
-* `convert(fileExt string, url string) string`
-
-    convert image at URL
-
-* `memeGenerate(topText string, bottomText string, url string) string`
-
-    generate a "meme"-style subtitle to an image
-
-* `rotate(angle float, url string) string`
-
-    Rotate image at URL
+* `renderWebpage(url string, width int, height int) string`
     
-* `resize(scale float, url string) string`
-
-    Resize image at URL
-
-* `blur(amount float, url string) string`
-
-    Blur image at URL
+    screenshot a website, providing width and height of browser
 
 
 ### Example
 
-This example shows calling the service method `stackhut/image-process/Default.memeGenerate` using the Python client libraries to add a comment to an image and generate a meme.
+This example shows calling the service method `stackhut/web-tools/Default.renderWebpage` using the Python client libraries to add a comment to an image and generate a meme.
 
 ```python
 import stackhut_client as client
-image_process = client.SHService('stackhut', 'image-process')
-meme_url = image_process.Default.memeGenerate("I'm not saying it's containers...", "...but it's containers", "https://raw.githubusercontent.com/danieldiekmeier/memegenerator/master/aliens.jpg")
+web_tools = client.SHService('stackhut', 'web-tools')
+render_url = web_tools.Default.renderWebpage("http://www.stackhut.com", 1024, 768)
 ```
 
 ## Detailed Documentation
 
 ### Overview
-
 
 This Python-based service demonstrates the following features,
 
@@ -62,7 +45,7 @@ This Python-based service demonstrates the following features,
 
 We also recommend looking at other, more detailed, examples of using StackHut to [convert PDF files](https://github.com/StackHut/pdf-tools) and [process images](https://github.com/StackHut/image-process).
 
-The functions in this service operate by downloading an image referenced by a URL (e.g. one uploaded by a user), modifying the image using the open-source [GraphicsMagick](http://www.graphicsmagick.org/)) library amongst others, and uploading the result to a URL that is returned to the user.
+The `renderWebpage` function in this service operates by configuring a headless browser and remotely rendering the referenced URL into to a image and uploading the result to a URL that is returned to the user.
 
 To accomplish this we need to configure the service within the `Hutfile.yaml` to include the necessary OS/language libraries and to bundle resource files, and make use of the [StackHut runtime library](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) within our `app.py` service code to handle files.
 
@@ -75,20 +58,8 @@ The syntax is somewhat similar to defining an interface in Java but using basic 
 
 ```java
 interface Default {
-    // convert image at URL
-    convert(fileExt string, url string) string
-
-    // generate a "meme"-style subtitle to an image
-    memeGenerate(topText string, bottomText string, url string) string
-
-    // Rotate image at URL
-    rotate(angle float, url string) string
-    
-    // Resize image at URL
-    resize(scale float, url string) string
-
-    // Blur image at URL
-    blur(amount float, url string) string
+    // screenshot a website, providing width and height of browser
+    renderWebpage(url string, width int, height int) string
 }
 ```
 
@@ -106,38 +77,67 @@ This list can be either individual files or directories, in which case the entir
 
 ```yaml
 # Service name (a combination of lower case letters, numbers, and dashes)
-name: image-process
+name: web-tools
+
+# GitHub source repo link (optional)
+github_url: https://github.com/StackHut/web-tools
 
 # Service description
-description: Image Processing Service
-
-# GitHub URL to the project
-github_url: https://github.com/StackHut/image-process
+description: Web dev tools inc. a headless browser written in Selenium
 
 # The service dependencies, in terms of the base OS and language runtime
 baseos: fedora
 stack: python
 
-# any OS packages we require within the stack
-os_deps:
-    - GraphicsMagick
-    - python3-pillow
-
-# a list of files/dirs we wish to copy into the image
-files:
-    - res
-
 # Persist the service between requests
-persistent: True
+persistent: False
 
 # Restrict service access to authenticated users
 private: False
+
+# a list of files we wish to copy into the image
+files:
+    - phantomjs-2.0.1-bin
+    - libicu-4.2.1-9.1.el6_2.x86_64.rpm  # wget from http://mirror.centos.org/centos/6/os/x86_64/Packages/libicu-4.2.1-9.1.el6_2.x86_64.rpm
+
+os_deps:
+    - freetype
+    - fontconfig
+    - libjpeg
+    - libpng
+    - libpng12
+    - urw-fonts
+
+docker_cmds:
+    - RUN rpm -iv --force libicu-4.2.1-9.1.el6_2.x86_64.rpm
 ```
 
 ### Application Code (`app.py`) 
 
-This application code in [`app.py`](https://github.com/StackHut/image-process/blob/master/app.py) forms the service entry-points exposed by the `pdf-tools` service, with the methods and parameters matching those described above and in the `api.idl`.
+This application code show below and in [`app.py`](https://github.com/StackHut/web-tools/blob/master/app.py) forms the service entry-points exposed by the `web-tools` service, with the methods and parameters matching those described above and in the `api.idl`.
 This is standard [Python 3](http://www.python.org) code however there are a few important points to note around file handling and shelling out to external commands.
+
+```python
+import stackhut
+from selenium import webdriver
+
+class Default(stackhut.Service):
+    def __init__(self):
+        pass
+
+    def renderWebpage(self, url, width, height):
+        driver = webdriver.PhantomJS(stackhut.root_dir + "/phantomjs-2.0.1-bin") # or add to your PATH
+        driver.set_window_size(width, height) # optional
+        driver.get(url)
+
+        driver.save_screenshot('screen.png') # save a screenshot to disk
+        return stackhut.put_file('screen.png')
+
+# export the services here
+SERVICES = {"Default": Default()}
+```
+
+
 
 #### File Handling
 
