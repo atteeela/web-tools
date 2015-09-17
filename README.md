@@ -68,6 +68,8 @@ interface Default {
 
 The `Hutfile.yaml` listed below follows the format described in the [documentation](http://stackhut.readthedocs.org/en/latest/creating_service/service_structure.html#hutfile): specifying the base OS (e.g. Fedora, Debian, etc.), the language stack (e.g. Python, NodeJS, etc.), and so on. 
 
+For this particular service we set the `persistent` flag to be `False`, cuasing the StackHut platform to construct the service in response to a request and destroy it afterwards. This is a concious decision as unfortunately the `PhantomJS` binary can be unstable over time, and thus making the service stateless allows us to handle this condition and scale horizontally as required instead.
+
 Now let's look at the `os_deps` field, this is a list of OS packages that are to be installed and embedded within the image - packages one would install using `apt-get` or `yum` within a Linux distribution. 
 Here we configure the service to include a range of Linux system libraries from the Fedora package repository.
 
