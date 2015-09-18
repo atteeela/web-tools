@@ -41,7 +41,7 @@ This Python-based service demonstrates the following features,
 * OS dependencies
 * Embedding and accessing resource files within a service
 * Custom binaries and dependencies
-* Running arbitrary Docker build commands
+* Running arbitrary [Docker build](https://docs.docker.com/reference/builder/) commands
 
 We also recommend looking at other, more detailed, examples of using StackHut to [convert PDF files](https://github.com/StackHut/pdf-tools) and [process images](https://github.com/StackHut/image-process).
 
