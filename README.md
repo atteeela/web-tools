@@ -1,7 +1,7 @@
 # Web Tools
 ## Browser-as-a-Service
 
-``web-tools`` is a StackHut service that screenshots websites. This is a common task that is tricky to build on a regular service, but suits itself particularly well to StackHut.
+``web-tools`` is a StackHut service that screenshots websites. This is a common task that is tricky to build on a regular server, and suits itself particularly well to StackHut.
 
 It's powered by,
 
