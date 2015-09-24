@@ -3,31 +3,10 @@
 
 ``web-tools`` is a StackHut service that screenshots websites. This is a common task that is tricky to build on a regular server, and suits itself particularly well to StackHut.
 
-It's powered by,
+It's powered by:
 
 * [PhantomJS](http://phantomjs.org/),
-* [Selenium](http://www.seleniumhq.org/),
-
-
-## Usage
-
-### Service Interface (`api.idl`)
-
-#### `Default` Interface
-
-* `renderWebpage(url string, width int, height int) string`
-    
-    screenshot a website, providing width and height of browser
-
-### Example
-
-This example calls the method `stackhut/web-tools/Default.renderWebpage` using the JavaScript client libraries. This will screenshot the given website, and return a URL to an image of the website.
-
-```javascript
-let client = require('stackhut-client');
-let service = client.SHService('stackhut', 'web-tools');
-let result = service.Default.renderWebpage("https://stackhut.com",1280,359);
-```
+* [Selenium](http://www.seleniumhq.org/)
 
 ## Detailed Documentation
 
@@ -150,4 +129,24 @@ We use the [StackHut runtime functions](http://stackhut.readthedocs.org/en/lates
 #### Root Directory
 
 We use the [StackHut runtime functions](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) to obtain the location of the service on the filesystem from `stackhut.root_dir`. This is used to reference embedded resource files, in this case the `phantomjs` binary as needed by Selenium.
+
+## Usage
+
+### Service Interface (`api.idl`)
+
+#### `Default` Interface
+
+* `renderWebpage(url string, width int, height int) string`
+    
+    screenshot a website, providing width and height of browser
+
+### Example
+
+This example calls the method `stackhut/web-tools/Default.renderWebpage` using the JavaScript client libraries. This will screenshot the given website, and return a URL to an image of the website.
+
+```javascript
+let client = require('stackhut-client');
+let service = client.SHService('stackhut', 'web-tools');
+let result = service.Default.renderWebpage("https://stackhut.com",1280,359);
+```
 
