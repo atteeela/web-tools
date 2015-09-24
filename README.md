@@ -1,14 +1,12 @@
 # Web Tools
 ## Browser-as-a-Service
 
-``web-tools`` is a StackHut service that performs several web-developer related functions. 
+``web-tools`` is a StackHut service that screenshots websites. This is a common task that is tricky to build on a regular service, but suits itself particularly well to StackHut.
 
 It's powered by,
 
 * [PhantomJS](http://phantomjs.org/),
 * [Selenium](http://www.seleniumhq.org/),
-
-and uses these to provide a screen-shotting service that works for JS-heavy sites but will be expanded in the future. 
 
 
 ## Usage
@@ -21,15 +19,14 @@ and uses these to provide a screen-shotting service that works for JS-heavy site
     
     screenshot a website, providing width and height of browser
 
-
 ### Example
 
-This example shows calling the service method `stackhut/web-tools/Default.renderWebpage` using the Python client libraries to add a comment to an image and generate a meme.
+This example calls the method `stackhut/web-tools/Default.renderWebpage` using the JavaScript client libraries. This will screenshot the given website, and return a URL to an image of the website.
 
-```python
-import stackhut_client as client
-web_tools = client.SHService('stackhut', 'web-tools')
-render_url = web_tools.Default.renderWebpage("http://www.stackhut.com", 1024, 768)
+```javascript
+let client = require('stackhut-client');
+let service = client.SHService('stackhut', 'web-tools');
+let result = service.Default.renderWebpage("https://stackhut.com",1280,359);
 ```
 
 ## Detailed Documentation
@@ -43,18 +40,21 @@ This Python-based service demonstrates the following features,
 * Custom binaries and dependencies
 * Running arbitrary [Docker build](https://docs.docker.com/reference/builder/) commands
 
-We also recommend looking at other, more detailed, examples of using StackHut to [convert PDF files](https://github.com/StackHut/pdf-tools) and [process images](https://github.com/StackHut/image-process).
+The `renderWebpage` function in this service operates by configuring a headless browser and remotely rendering the referenced URL into to a image, uploading the result, and returning a URL to the uploaded image.
 
-The `renderWebpage` function in this service operates by configuring a headless browser and remotely rendering the referenced URL into to a image and uploading the result to a URL that is returned to the user.
+Firstly, we need to specify the API into our service in `api.idl`.
 
-To accomplish this we need to configure the service within the `Hutfile.yaml` to include the necessary OS/language libraries, bundle resource files, and run arbitrary shell commands when configuring a service. We also make use of the [StackHut runtime library](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) within our `app.py` service code to handle files and embedded resources.
+Secondly, we need to configure the service within the `Hutfile.yaml`. This will include the necessary OS/language libraries, bundle resource files, and run the arbitrary shell commands which our service needs. 
 
+We then write our service as a regular Python class in `app.py`, which will make use of the [StackHut runtime library](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) to handle files and embedded resources.
 
 ### API Definition (`api.idl`)
 
-The API definition below defines the publicly accessible entry-points to the service that can be called from clients, e.g. client-side JS or mobile applications. Here we declare several functions that operate on images and return the result. 
+The API definition below defines the publicly accessible entry-points to the service that can be called from clients, e.g. client-side JS or mobile applications. 
+
 The syntax is somewhat similar to defining an interface in Java but using basic JSON types - this is described further in the [StackHut documentation](http://stackhut.readthedocs.org/en/latest/creating_service/app_structure.html#interface-definition-api-idl).
 
+We have one function we want to call: renderWebpage. So let's add it's signature.
 
 ```java
 interface Default {
@@ -68,14 +68,15 @@ interface Default {
 
 The `Hutfile.yaml` listed below follows the format described in the [documentation](http://stackhut.readthedocs.org/en/latest/creating_service/service_structure.html#hutfile): specifying the base OS (e.g. Fedora, Debian, etc.), the language stack (e.g. Python, NodeJS, etc.), and so on. 
 
-For this particular service we set the `persistent` flag to be `False`, cuasing the StackHut platform to construct the service in response to a request and destroy it afterwards. This is a concious decision as unfortunately the `PhantomJS` binary can be unstable over time, and thus making the service stateless allows us to handle this condition and scale horizontally as required instead.
+For this particular service we set the `persistent` flag to be `False`, causing the StackHut platform to construct the service in response to a request and destroy it afterwards. This is a conscious decision, as  the `PhantomJS` binary can be unstable over time; making the service stateless allows us to combat this and guarantee scalability.
 
-Now let's look at the `os_deps` field, this is a list of OS packages that are to be installed and embedded within the image - packages one would install using `apt-get` or `yum` within a Linux distribution. 
-Here we configure the service to include a range of Linux system libraries from the Fedora package repository.
+If we look at the `os_deps` field, we will see a list of OS packages that are to be installed and embedded within the image - packages that one would install using `apt-get` or `yum` within a Linux distribution. Here we configure the service to include a range of Linux system libraries from the Fedora package repository which PhantomJS requires.
 
 Within the `files` field we include a list of files within the project directory that you wish to package up within the service for deployment.
+
 This list can be either individual files or directories, in which case the entire contests of the directory is included. (Note, you must explicitly list additional files within this field to ensure they exist during testing and deployment. By default only the basic project files are packaged up.)
-In this case we include a set of custom binaries to run [PhantomJS](http://phantomjs.org/) - a difficult to build project that moves rapidly and thus not available within the OS package repositories.
+
+In this case we include a set of custom binaries to run [PhantomJS](http://phantomjs.org/). PhantomJS is tricky to build, and is not not available within the OS package repositories, so we have to install it from the file itself.
 
 Finally we include the `docker_cmds` field, this specifies a list of explicit, imperative, commands to be executed when constructing the Docker container. The available commands are those supported by Docker's [Dockerfile build system](https://docs.docker.com/reference/builder/). Here we use the `docker_cmds` field to explicitly install a RedHat Linux `.rpm` package inside the service that is required by `PhantomJS`.
 
@@ -120,7 +121,7 @@ docker_cmds:
 ### Application Code (`app.py`) 
 
 This application code show below and in [`app.py`](https://github.com/StackHut/web-tools/blob/master/app.py) forms the service entry-points exposed by the `web-tools` service, with the methods and parameters matching those described above and in the `api.idl`.
-This is standard [Python 3](http://www.python.org) code however there are a few important points to note around file handling and configuring the root directory.
+This is standard [Python 3](http://www.python.org) code; however, there are a few important points to note around file handling and configuring the root directory.
 
 ```python
 import stackhut
@@ -144,7 +145,7 @@ SERVICES = {"Default": Default()}
 
 #### File Handling
 
-We use the [StackHut runtime functions](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) to aid file handling within the service - this includes the function  `stackhut.put_file()` that transparently upload files to cloud storage. Files are processed within the current working directory, this is unique to each request and flushed upon request completion. Files themselves live on the cloud for approximately a few hours before being removed.
+We use the [StackHut runtime functions](http://stackhut.readthedocs.org/en/latest/creating_service/service_runtime.html) to aid file handling within the service - this includes the function  `stackhut.put_file()` that transparently upload files to cloud storage. Files are processed within the current working directory; this is unique to each request and flushed upon request completion. Files themselves live on the cloud for approximately a few hours before being removed.
 
 #### Root Directory
 
