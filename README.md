@@ -55,9 +55,9 @@ Within the `files` field we include a list of files within the project directory
 
 This list can be either individual files or directories, in which case the entire contests of the directory is included. (Note, you must explicitly list additional files within this field to ensure they exist during testing and deployment. By default only the basic project files are packaged up.)
 
-In this case we include a set of custom binaries to run [PhantomJS](http://phantomjs.org/). PhantomJS is tricky to build, and is not not available within the OS package repositories, so we have to install it from the file itself.
+In this case we include a set of custom binaries to run [PhantomJS](http://phantomjs.org/). PhantomJS is tricky to build, and is not available within the OS package repositories, so we have to install it from the file itself.
 
-Finally we include the `docker_cmds` field, this specifies a list of explicit, imperative, commands to be executed when constructing the Docker container. The available commands are those supported by Docker's [Dockerfile build system](https://docs.docker.com/reference/builder/). Here we use the `docker_cmds` field to explicitly install a RedHat Linux `.rpm` package inside the service that is required by `PhantomJS`.
+Finally we include the `docker_cmds` field. This specifies a list of explicit, imperative, commands to be executed when constructing the Docker container. The available commands are those supported by Docker's [Dockerfile build system](https://docs.docker.com/reference/builder/). Here we use the `docker_cmds` field to explicitly install a RedHat Linux `.rpm` package inside the service that is required by `PhantomJS`.
 
 
 ```yaml
